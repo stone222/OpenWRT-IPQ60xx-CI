@@ -32,6 +32,14 @@ FIX "theme-aurora" "$PACKAGE_PATH/luci-app-aurora-config" find \
 	"$PACKAGE_PATH/luci-app-aurora-config/root/usr/share/aurora/" -type f -name '*.template' -exec sed -i \
 	"s/nav_type '.*'/nav_type 'dropdown'/g; s/struct_radius_base '.*'/struct_radius_base '0.125rem'/g" {} +
 
+#修复vantage表单说明宽度和进度条标签字体（anothaDev/luci-theme-vantage#51、#52）
+FIX "theme-vantage" "$PACKAGE_PATH/luci-theme-vantage" sed -i \
+	-e '/^\.cbi-map-descr {/,/^}/ { /max-width: 76ch;/d; }' \
+	-e 's/^\(\.cbi-section-descr { \)max-width: 80ch; /\1/' \
+	-e '/^\.cbi-value-description {/,/^}/ { /max-width: 70ch;/d; }' \
+	-e '/^\/\* progress bars: thin track/,$ { /^\.cbi-progressbar::before {/,/^}/ { s/^[[:space:]]*font: 500 var(--fs-micro)\/1\.2 var(--mono);/\tfont: inherit; line-height: normal;/; } }' \
+	"$PACKAGE_PATH/luci-theme-vantage/luci-theme-vantage/htdocs/luci-static/vantage/vantage.css"
+
 #修改mini-diskmanager菜单位置
 FIX "mini-diskmanager" "$PACKAGE_PATH/luci-app-mini-diskmanager" sed -i "s/services/system/g" \
 	"$PACKAGE_PATH/luci-app-mini-diskmanager/luci-app-mini-diskmanager/root/usr/share/luci/menu.d/luci-app-mini-diskmanager.json"
@@ -39,7 +47,3 @@ FIX "mini-diskmanager" "$PACKAGE_PATH/luci-app-mini-diskmanager" sed -i "s/servi
 #修改natmapt菜单位置
 FIX "natmapt" "$PACKAGE_PATH/luci-app-natmapt" sed -i "s/network/services/g" \
 	"$PACKAGE_PATH/luci-app-natmapt/root/usr/share/luci/menu.d/luci-app-natmap.json"
-
-#修复Rust编译失败
-FIX "rust" "$FEEDS_PATH/packages/lang/rust" sed -i 's/ci-llvm=true/ci-llvm=false/g' \
-	"$FEEDS_PATH/packages/lang/rust/Makefile"
